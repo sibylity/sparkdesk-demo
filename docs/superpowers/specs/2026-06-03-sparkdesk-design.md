@@ -48,6 +48,39 @@ sparkdesk-demo/
 
 ---
 
+## Design System
+
+**Component library:** shadcn/ui (Tailwind + Radix primitives)
+
+**Style:** Minimalist dark theme. No icon-heavy navigation — clean text labels, subtle borders, generous whitespace.
+
+**Palette — Electric Indigo:**
+
+All colors defined as CSS custom properties in a single theme block, making global retheming a one-file change.
+
+| Variable | Value | Usage |
+|---|---|---|
+| `--accent` | `#818CF8` | Primary interactive (buttons, active states, links) |
+| `--accent-dim` | `#818CF814` | Subtle accent backgrounds |
+| `--accent-border` | `#818CF830` | Accent-tinted borders |
+| `--bg` | `#09090B` | App background |
+| `--bg-panel` | `#0E0E11` | Sidebar, elevated panels |
+| `--bg-surface` | `#131316` | Cards, inputs |
+| `--bg-hover` | `#1A1A1F` | Hover states |
+| `--bg-selected` | `#16161D` | Selected rows |
+| `--border` | `#1F1F27` | Default separators |
+| `--border-strong` | `#2A2A35` | More visible dividers |
+| `--text-primary` | `#FAFAFA` | Primary text |
+| `--text-secondary` | `#A1A1AA` | Secondary / label text |
+| `--text-muted` | `#52525B` | Timestamps, hints |
+| `--color-urgent` | `#F87171` | Urgent priority |
+| `--color-waiting` | `#FBBF24` | Waiting on customer |
+| `--color-resolved` | `#34D399` | Resolved / success |
+
+**Reference:** `design-preview.html` in repo root — full working UI mockup.
+
+---
+
 ## Authentication & Multi-Tenancy
 
 - **WorkOS AuthKit** for agent/admin login
