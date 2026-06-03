@@ -1,3 +1,4 @@
+import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { logger } from 'hono/logger'
 import { cors } from 'hono/cors'
@@ -16,7 +17,7 @@ app.route('/internal/tickets', ticketRoutes)
 app.route('/internal/customers', customerRoutes)
 app.route('/internal/agents', agentRoutes)
 
-export default {
-  port: process.env.PORT ?? 3001,
-  fetch: app.fetch,
-}
+const port = Number(process.env.PORT ?? 3001)
+serve({ fetch: app.fetch, port }, () => {
+  console.log(`API listening on http://localhost:${port}`)
+})

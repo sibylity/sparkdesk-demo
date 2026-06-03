@@ -12,6 +12,7 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@hono/node-server": "^2.0.4",
     "@hono/zod-validator": "^0.8.0",
     "@prisma/client": "^5.16.0",
     "@sparkdesk/shared": "workspace:*",
