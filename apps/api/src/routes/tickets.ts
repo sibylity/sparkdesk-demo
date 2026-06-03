@@ -8,6 +8,7 @@ import {
   ReplyTicketSchema,
   AddNoteSchema,
 } from '@sparkdesk/shared'
+import { capture } from '@sparkdesk/analytics'
 
 export const ticketRoutes = new Hono()
 
@@ -78,6 +79,16 @@ ticketRoutes.post('/', zValidator('json', CreateTicketSchema), async (c) => {
     include: { customer: true, assignee: true },
   })
 
+  capture('ticket_created', {
+    distinctId: orgId,
+    orgId,
+    ticketId: ticket.id,
+    priority: ticket.priority,
+    channel: ticket.channel,
+    customerId: ticket.customerId,
+    assigneeId: ticket.assigneeId ?? undefined,
+  })
+
   return c.json(ticket, 201)
 })
 
@@ -99,6 +110,17 @@ ticketRoutes.patch('/:id', zValidator('json', UpdateTicketSchema), async (c) => 
   })
 
   if (ticket.count === 0) return c.json({ error: 'Not found' }, 404)
+
+  capture('ticket_updated', {
+    distinctId: orgId,
+    orgId,
+    ticketId: c.req.param('id'),
+    ...(data.status && { status: data.status }),
+    ...(data.priority && { priority: data.priority }),
+    ...('assigneeId' in data && { assigneeId: data.assigneeId }),
+    ...(data.snoozedUntil && { snoozedUntil: data.snoozedUntil }),
+  })
+
   return c.json({ ok: true })
 })
 
@@ -120,6 +142,13 @@ ticketRoutes.post('/:id/reply', zValidator('json', ReplyTicketSchema), async (c)
     }),
   ])
 
+  capture('ticket_reply_sent', {
+    distinctId: agentId,
+    orgId,
+    ticketId: c.req.param('id'),
+    agentId,
+  })
+
   return c.json(message, 201)
 })
 
@@ -134,6 +163,13 @@ ticketRoutes.post('/:id/notes', zValidator('json', AddNoteSchema), async (c) => 
   const note = await db.note.create({
     data: { ticketId: c.req.param('id'), body, agentId },
     include: { agent: true },
+  })
+
+  capture('ticket_note_added', {
+    distinctId: agentId,
+    orgId,
+    ticketId: c.req.param('id'),
+    agentId,
   })
 
   return c.json(note, 201)

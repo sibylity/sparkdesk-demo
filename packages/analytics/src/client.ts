@@ -13,6 +13,7 @@ export function getAnalyticsClient(): PostHog | null {
 
   _client = new PostHog(process.env.POSTHOG_API_KEY, {
     host: process.env.POSTHOG_HOST ?? 'https://us.i.posthog.com',
+    enableExceptionAutocapture: true,
   })
   return _client
 }

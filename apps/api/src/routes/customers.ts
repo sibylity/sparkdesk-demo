@@ -3,6 +3,7 @@ import { zValidator } from '@hono/zod-validator'
 import { db } from '../db'
 import { serviceAuthMiddleware } from '../middleware/auth'
 import { UpsertCustomerSchema } from '@sparkdesk/shared'
+import { capture } from '@sparkdesk/analytics'
 
 export const customerRoutes = new Hono()
 
@@ -54,6 +55,14 @@ customerRoutes.post('/', zValidator('json', UpsertCustomerSchema), async (c) => 
     where: { organizationId_email: { organizationId: orgId, email: data.email } },
     create: { ...data, organizationId: orgId },
     update: { name: data.name, company: data.company },
+  })
+
+  capture('customer_created', {
+    distinctId: orgId,
+    orgId,
+    customerId: customer.id,
+    email: customer.email,
+    company: customer.company ?? undefined,
   })
 
   return c.json(customer, 201)

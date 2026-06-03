@@ -26,6 +26,9 @@ importers:
       '@prisma/client':
         specifier: ^5.16.0
         version: 5.22.0(prisma@5.22.0)
+      '@sparkdesk/analytics':
+        specifier: workspace:*
+        version: link:../../packages/analytics
       '@sparkdesk/shared':
         specifier: workspace:*
         version: link:../../packages/shared

@@ -3,6 +3,7 @@ import { zValidator } from '@hono/zod-validator'
 import { db } from '../db'
 import { serviceAuthMiddleware } from '../middleware/auth'
 import { UpdateAgentSchema } from '@sparkdesk/shared'
+import { capture } from '@sparkdesk/analytics'
 
 export const agentRoutes = new Hono()
 
@@ -32,5 +33,13 @@ agentRoutes.patch('/:id', zValidator('json', UpdateAgentSchema), async (c) => {
   })
 
   if (result.count === 0) return c.json({ error: 'Not found' }, 404)
+
+  capture('agent_role_updated', {
+    distinctId: orgId,
+    orgId,
+    agentId: c.req.param('id'),
+    role,
+  })
+
   return c.json({ ok: true })
 })
