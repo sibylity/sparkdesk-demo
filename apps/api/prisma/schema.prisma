@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id                   String   @id @default(cuid())
+  name                 String
+  workosOrganizationId String   @unique
+  plan                 Plan     @default(free)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  agents    Agent[]
+  customers Customer[]
+  tickets   Ticket[]
+}
+
+enum Plan {
+  free
+  pro
+  enterprise
+}
+
+model Agent {
+  id             String      @id @default(cuid())
+  name           String
+  email          String
+  role           AgentRole   @default(agent)
+  workosUserId   String      @unique
+  organizationId String
+  createdAt      DateTime    @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  assignedTickets Ticket[]    @relation("AssignedTickets")
+  messages        Message[]
+  notes           Note[]
+}
+
+enum AgentRole {
+  admin
+  agent
+}
+
+model Customer {
+  id             String    @id @default(cuid())
+  externalId     String?
+  name           String
+  email          String
+  company        String?
+  organizationId String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  tickets        Ticket[]
+
+  @@unique([organizationId, email])
+  @@unique([organizationId, externalId])
+}
+
+model Ticket {
+  id             String        @id @default(cuid())
+  subject        String
+  status         TicketStatus  @default(open)
+  priority       TicketPriority @default(normal)
+  channel        TicketChannel @default(web)
+  organizationId String
+  customerId     String
+  assigneeId     String?
+  slaDeadline    DateTime?
+  snoozedUntil   DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  customer       Customer     @relation(fields: [customerId], references: [id])
+  assignee       Agent?       @relation("AssignedTickets", fields: [assigneeId], references: [id])
+  messages       Message[]
+  notes          Note[]
+}
+
+enum TicketStatus {
+  open
+  in_progress
+  waiting_on_customer
+  resolved
+  closed
+  snoozed
+  spam
+}
+
+enum TicketPriority {
+  urgent
+  high
+  normal
+  low
+}
+
+enum TicketChannel {
+  web
+  api
+  slack
+  email
+}
+
+model Message {
+  id         String     @id @default(cuid())
+  ticketId   String
+  body       String
+  authorType MessageAuthorType
+  agentId    String?
+  createdAt  DateTime   @default(now())
+
+  ticket     Ticket     @relation(fields: [ticketId], references: [id])
+  agent      Agent?     @relation(fields: [agentId], references: [id])
+}
+
+enum MessageAuthorType {
+  customer
+  agent
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  ticketId  String
+  body      String
+  agentId   String
+  createdAt DateTime @default(now())
+
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  agent     Agent    @relation(fields: [agentId], references: [id])
+}
