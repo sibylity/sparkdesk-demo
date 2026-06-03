@@ -64,6 +64,7 @@ sparkdesk-demo/
 │       ├── package.json
 │       ├── .env.example
 │       ├── tailwind.config.ts
+│       ├── components.json            shadcn/ui config
 │       └── src/
 │           ├── app/
 │           │   ├── layout.tsx         root layout, WorkOS session provider
@@ -1350,7 +1351,108 @@ git commit -m "feat(web): Next.js 15 scaffold with WorkOS auth"
 
 ---
 
-## Task 6: `apps/web` — App shell (sidebar + layout)
+## Task 6: `apps/web` — shadcn/ui setup
+
+**Files:**
+- Create: `apps/web/components.json`
+- Modify: `apps/web/src/app/globals.css`
+
+shadcn/ui provides unstyled, accessible component primitives that we theme entirely via CSS variables. We install only the components we actually use: `Button`, `Textarea`, and `Separator`.
+
+- [ ] **Step 1: Initialise shadcn**
+
+```bash
+cd apps/web && npx shadcn@latest init
+```
+
+When prompted:
+- Style: **Default**
+- Base color: **Slate** (we'll override everything with our palette anyway)
+- CSS variables: **yes**
+
+This generates `components.json` and updates `globals.css` with shadcn's variable scaffold.
+
+- [ ] **Step 2: Add the components we need**
+
+```bash
+npx shadcn@latest add button textarea separator
+```
+
+Expected: creates `src/components/ui/button.tsx`, `textarea.tsx`, `separator.tsx`.
+
+- [ ] **Step 3: Override `globals.css` with the SparkDesk Indigo palette**
+
+Replace the generated `:root` and `.dark` blocks with our palette mapped to shadcn's variable names. shadcn expects HSL values (numbers only, no `hsl()` wrapper):
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   THEME — edit these variables to restyle the entire app.
+   shadcn reads the variables below; our custom properties
+   (--bg-panel, --text-muted, etc.) extend the system.
+   ============================================================ */
+:root {
+  /* shadcn core */
+  --background:          240 6% 4%;      /* #09090B */
+  --foreground:          0 0% 98%;       /* #FAFAFA */
+  --card:                240 8% 6%;      /* #0E0E11 */
+  --card-foreground:     0 0% 98%;
+  --popover:             240 8% 6%;
+  --popover-foreground:  0 0% 98%;
+  --primary:             234 89% 74%;    /* #818CF8 */
+  --primary-foreground:  240 6% 4%;
+  --secondary:           240 7% 9%;      /* #131316 */
+  --secondary-foreground:0 0% 98%;
+  --muted:               240 7% 9%;
+  --muted-foreground:    240 4% 65%;     /* #A1A1AA */
+  --accent:              240 7% 11%;     /* #1A1A1F — hover bg */
+  --accent-foreground:   0 0% 98%;
+  --destructive:         0 91% 71%;      /* #F87171 */
+  --destructive-foreground: 0 0% 98%;
+  --border:              240 10% 14%;    /* #1F1F27 */
+  --input:               240 10% 14%;
+  --ring:                234 89% 74%;
+  --radius:              0.375rem;
+
+  /* SparkDesk extended palette */
+  --bg-panel:      #0E0E11;
+  --bg-surface:    #131316;
+  --bg-hover:      #1A1A1F;
+  --bg-selected:   #16161D;
+  --border-strong: #2A2A35;
+  --text-primary:  #FAFAFA;
+  --text-secondary:#A1A1AA;
+  --text-muted:    #52525B;
+  --urgent:        #F87171;
+  --waiting:       #FBBF24;
+  --resolved:      #34D399;
+  --accent-color:  #818CF8;   /* our brand accent, avoids clash with shadcn --accent */
+  --accent-dim:    #818CF814;
+  --accent-border: #818CF830;
+}
+/* ============================================================ */
+
+* { border-color: hsl(var(--border)); }
+body { background: hsl(var(--background)); color: hsl(var(--foreground)); -webkit-font-smoothing: antialiased; }
+```
+
+- [ ] **Step 4: Verify shadcn Button renders**
+
+In any page, temporarily import and render `<Button>Test</Button>` from `@/components/ui/button`. It should appear with the indigo accent color. Remove it after confirming.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add apps/web/components.json apps/web/src/app/globals.css apps/web/src/components/ui
+git commit -m "feat(web): shadcn/ui setup with indigo palette"
+```
+
+---
+
+## Task 7: `apps/web` — App shell (sidebar + layout)
 
 **Files:**
 - Create: `apps/web/src/components/layout/sidebar.tsx`
@@ -1363,6 +1465,7 @@ git commit -m "feat(web): Next.js 15 scaffold with WorkOS auth"
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -1403,7 +1506,7 @@ export function Sidebar({ agentName, agentInitials }: SidebarProps) {
       <nav className="flex-1 px-2 py-1.5 space-y-px">
         {navItems.map((item, i) =>
           item === null ? (
-            <div key={i} className="my-2" style={{ height: 1, background: 'var(--border)' }} />
+            <Separator key={i} className="my-2 opacity-50" />
           ) : (
             <Link
               key={item.href}
@@ -1510,7 +1613,7 @@ git commit -m "feat(web): app shell and sidebar"
 
 ---
 
-## Task 7: `apps/web` — Ticket inbox page
+## Task 8: `apps/web` — Ticket inbox page
 
 **Files:**
 - Create: `apps/web/src/components/tickets/ticket-item.tsx`
@@ -1644,6 +1747,7 @@ export function TicketItem({ ticket, selected }: TicketItemProps) {
 ```typescript
 'use client'
 import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 import { TicketItem } from './ticket-item'
 import type { Ticket, Customer, TicketStatus } from '@sparkdesk/shared'
 
@@ -1679,12 +1783,7 @@ export function TicketList({ tickets, selectedId }: TicketListProps) {
         <span className="text-[13.5px] font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>
           Inbox
         </span>
-        <button
-          className="px-3 py-[5px] rounded text-[12.5px] font-[550] transition-opacity hover:opacity-80"
-          style={{ background: 'var(--accent)', color: 'var(--bg)' }}
-        >
-          New ticket
-        </button>
+        <Button size="sm">New ticket</Button>
       </div>
 
       {/* Filter chips */}
@@ -1764,7 +1863,7 @@ git commit -m "feat(web): ticket inbox — list with filter tabs"
 
 ---
 
-## Task 8: `apps/web` — Ticket detail page
+## Task 9: `apps/web` — Ticket detail page
 
 **Files:**
 - Create: `apps/web/src/components/tickets/ticket-thread.tsx`
@@ -1895,6 +1994,8 @@ export function buildThreadItems(
 ```typescript
 'use client'
 import { useState, useTransition } from 'react'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 
 interface ReplyBoxProps {
   onReply: (body: string) => Promise<void>
@@ -1941,41 +2042,21 @@ export function ReplyBox({ onReply, onNote }: ReplyBoxProps) {
         ))}
       </div>
 
-      <textarea
+      <Textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}
         placeholder={tab === 'reply' ? 'Reply to customer…' : 'Add an internal note…'}
         rows={3}
-        className="w-full rounded-lg px-3.5 py-2.5 text-[13px] resize-none leading-relaxed"
-        style={{
-          background: 'var(--bg-surface)',
-          border: '1px solid var(--border)',
-          color: 'var(--text-primary)',
-          outline: 'none',
-        }}
+        className="resize-none text-[13px] leading-relaxed"
       />
 
       <div className="flex justify-end gap-2 mt-2.5">
-        <button
-          className="px-3 py-[5px] rounded text-[12.5px] font-medium"
-          style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border-strong)',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-          }}
-          onClick={() => setBody('')}
-        >
+        <Button variant="outline" size="sm" onClick={() => setBody('')}>
           Discard
-        </button>
-        <button
-          disabled={!body.trim() || isPending}
-          onClick={handleSubmit}
-          className="px-3 py-[5px] rounded text-[12.5px] font-[550] transition-opacity hover:opacity-80 disabled:opacity-40"
-          style={{ background: 'var(--accent)', color: 'var(--bg)', cursor: 'pointer', border: 'none' }}
-        >
+        </Button>
+        <Button size="sm" disabled={!body.trim() || isPending} onClick={handleSubmit}>
           {tab === 'reply' ? 'Send reply' : 'Add note'}
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -1988,6 +2069,7 @@ export function ReplyBox({ onReply, onNote }: ReplyBoxProps) {
 import { notFound } from 'next/navigation'
 import { withAuth } from '@workos-inc/authkit-nextjs'
 import { apiClient } from '@/lib/api-client'
+import { Button } from '@/components/ui/button'
 import { TicketList } from '@/components/tickets/ticket-list'
 import { TicketThread, buildThreadItems } from '@/components/tickets/ticket-thread'
 import { ReplyBox } from '@/components/tickets/reply-box'
@@ -2056,34 +2138,9 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
             </div>
           </div>
           <div className="flex gap-1.5 pt-0.5">
-            <button
-              className="px-3 py-[5px] rounded text-[12.5px] font-medium"
-              style={{
-                background: 'var(--bg-surface)',
-                border: '1px solid var(--border-strong)',
-                color: 'var(--text-secondary)',
-                cursor: 'pointer',
-              }}
-            >
-              Assign
-            </button>
-            <button
-              className="px-3 py-[5px] rounded text-[12.5px] font-medium"
-              style={{
-                background: 'var(--bg-surface)',
-                border: '1px solid var(--border-strong)',
-                color: 'var(--text-secondary)',
-                cursor: 'pointer',
-              }}
-            >
-              Snooze
-            </button>
-            <button
-              className="px-3 py-[5px] rounded text-[12.5px] font-[550] hover:opacity-80"
-              style={{ background: 'var(--accent)', color: 'var(--bg)', border: 'none', cursor: 'pointer' }}
-            >
-              Resolve
-            </button>
+            <Button variant="outline" size="sm">Assign</Button>
+            <Button variant="outline" size="sm">Snooze</Button>
+            <Button size="sm">Resolve</Button>
           </div>
         </div>
 
@@ -2108,7 +2165,7 @@ git commit -m "feat(web): ticket detail — thread, reply, internal note"
 
 ---
 
-## Task 9: Seed demo data
+## Task 10: Seed demo data
 
 **Files:**
 - Create: `apps/api/prisma/seed.ts`
