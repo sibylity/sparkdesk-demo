@@ -26,11 +26,11 @@ export interface OrgProperties {
 
 /**
  * Base properties carried by every server-side event.
+ * Extends OrgProperties and picks the optional user fields from UserProperties
+ * so downstream events get consistent naming without duplicating field definitions.
  * Client-side events (posthog-js) extend this partially —
  * posthog-js attaches user identity automatically after posthog.identify().
  */
-export interface BaseEventProperties extends OrgProperties {
-  userId?: string
-  userEmail?: string
+export interface BaseEventProperties extends OrgProperties, Partial<Pick<UserProperties, 'userId' | 'userEmail'>> {
   environment?: 'development' | 'production' | 'test'
 }
