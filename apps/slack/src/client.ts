@@ -60,7 +60,7 @@ export class SparkDeskClient {
   private async request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const res = await fetch(`${this.apiUrl}${path}`, {
       ...options,
-      headers: { ...this.headers, ...(options.headers as Record<string, string> ?? {}) },
+      headers: { ...this.headers, ...((options.headers as Record<string, string>) ?? {}) },
     })
 
     if (!res.ok) {
@@ -96,7 +96,11 @@ export class SparkDeskClient {
   getOpenTicketByCustomer(customerId: string): Promise<SparkDeskTicket | null> {
     return this.request<SparkDeskTicket[]>(`/internal/tickets?customerId=${customerId}&status=open`)
       .then((tickets) => tickets[0] ?? null)
-      .catch(() => null)
+      // Only suppress the empty-result case; real errors (auth, network) propagate
+      .catch((err: unknown) => {
+        if (err instanceof Error && err.message.includes('API error 404')) return null
+        throw err
+      })
   }
 }
 
