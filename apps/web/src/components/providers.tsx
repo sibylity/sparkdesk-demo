@@ -12,8 +12,8 @@ interface ProvidersProps {
 }
 
 export function Providers({ children, userId, name, email, orgId }: ProvidersProps) {
+  useEffect(() => { initPostHog() }, [])
   useEffect(() => {
-    initPostHog()
     identifyAgent({ userId, name, email, orgId })
   }, [userId, name, email, orgId])
 
