@@ -6,6 +6,7 @@ import { ticketRoutes } from './routes/tickets'
 import { customerRoutes } from './routes/customers'
 import { agentRoutes } from './routes/agents'
 import { settingsRoutes } from './routes/settings'
+import { slackRoutes } from './routes/slack'
 import { getAnalyticsClient, shutdownAnalytics } from '@sparkdesk/analytics'
 
 const app = new Hono()
@@ -19,6 +20,7 @@ app.route('/internal/tickets', ticketRoutes)
 app.route('/internal/customers', customerRoutes)
 app.route('/internal/agents', agentRoutes)
 app.route('/internal/settings', settingsRoutes)
+app.route('/internal/slack', slackRoutes)
 
 app.onError((err, c) => {
   const agentId = c.req.header('X-Agent-Id')

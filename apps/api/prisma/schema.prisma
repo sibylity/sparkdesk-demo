@@ -16,9 +16,10 @@ model Organization {
   updatedAt            DateTime @updatedAt
   featureToggles       Json     @default("{}")
 
-  agents    Agent[]
-  customers Customer[]
-  tickets   Ticket[]
+  agents          Agent[]
+  customers       Customer[]
+  tickets         Ticket[]
+  slackConnection SlackConnection?
 }
 
 enum Plan {
@@ -136,4 +137,18 @@ model Note {
 
   ticket    Ticket   @relation(fields: [ticketId], references: [id])
   agent     Agent    @relation(fields: [agentId], references: [id])
+}
+
+model SlackConnection {
+  id               String   @id @default(cuid())
+  organizationId   String   @unique
+  workspaceId      String
+  workspaceName    String
+  botToken         String
+  botUserId        String
+  defaultChannelId String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  organization     Organization @relation(fields: [organizationId], references: [id])
 }
