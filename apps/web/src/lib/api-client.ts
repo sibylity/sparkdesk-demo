@@ -55,12 +55,31 @@ export const apiClient = {
   agents: {
     list: (orgId: string) =>
       apiRequest<unknown[]>('/internal/agents', { organizationId: orgId }),
+    update: (orgId: string, id: string, body: { role: 'admin' | 'agent' }) =>
+      apiRequest<{ ok: boolean }>(`/internal/agents/${id}`, {
+        organizationId: orgId,
+        method: 'PATCH',
+        body,
+      }),
     dismissTip: (orgId: string, agentId: string, tipId: string) =>
       apiRequest<{ ok: boolean }>(`/internal/agents/${agentId}/dismiss-tip`, {
         organizationId: orgId,
         agentId,
         method: 'POST',
         body: { tipId },
+      }),
+  },
+  settings: {
+    getToggles: (orgId: string) =>
+      apiRequest<{ toggles: Array<{ key: string; name: string; description: string; defaultEnabled: boolean; requiredPlan: string | null; enabled: boolean }> }>(
+        '/internal/settings/toggles',
+        { organizationId: orgId }
+      ),
+    patchToggles: (orgId: string, updates: Record<string, boolean>) =>
+      apiRequest<{ ok: boolean; updated: string[] }>('/internal/settings/toggles', {
+        organizationId: orgId,
+        method: 'PATCH',
+        body: updates,
       }),
   },
 }
