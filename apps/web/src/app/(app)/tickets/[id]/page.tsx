@@ -7,8 +7,9 @@ import { TicketList } from '@/components/tickets/ticket-list'
 import { TicketThread, buildThreadItems } from '@/components/tickets/ticket-thread'
 import { ReplyBox } from '@/components/tickets/reply-box'
 import { ResolveButton } from '@/components/tickets/resolve-button'
-import { StatusTag, PriorityDot } from '@/components/tickets/status-badge'
-import type { Ticket, Customer, TicketMessage, TicketNote } from '@sparkdesk/shared'
+import { StatusTag } from '@/components/tickets/status-badge'
+import { PrioritySelect } from '@/components/tickets/priority-select'
+import type { Ticket, Customer, TicketMessage, TicketNote, TicketPriority } from '@sparkdesk/shared'
 
 const DEMO_ORG_ID = process.env.DEMO_ORG_ID ?? ''
 const DEMO_AGENT_ID = process.env.DEMO_AGENT_ID ?? ''
@@ -63,6 +64,12 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
     revalidatePath(`/tickets/${id}`)
   }
 
+  async function handlePriorityChange(priority: TicketPriority) {
+    'use server'
+    await apiClient.tickets.update(DEMO_ORG_ID, id, { priority })
+    revalidatePath(`/tickets/${id}`)
+  }
+
   return (
     <div className="flex h-full">
       <TicketList tickets={tickets} selectedId={id} />
@@ -80,7 +87,7 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
               {ticket.subject}
             </h1>
             <div className="flex items-center gap-2.5 text-[12px]" style={{ color: 'var(--text-muted)' }}>
-              <PriorityDot priority={ticket.priority} />
+              <PrioritySelect priority={ticket.priority} onPriorityChange={handlePriorityChange} />
               <StatusTag status={ticket.status} />
               <span style={{ color: 'var(--border-strong)' }}>·</span>
               <span>{ticket.customer.company ?? ticket.customer.name}</span>
