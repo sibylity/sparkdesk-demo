@@ -22,7 +22,7 @@ export default async function InboxPage() {
 
   async function dismissInboxTip() {
     'use server'
-    await apiClient.dismissTip(DEMO_ORG_ID, DEMO_AGENT_ID, 'inbox_filters_tip')
+    await apiClient.agents.dismissTip(DEMO_ORG_ID, DEMO_AGENT_ID, 'inbox_filters_tip')
     revalidatePath('/inbox')
   }
 

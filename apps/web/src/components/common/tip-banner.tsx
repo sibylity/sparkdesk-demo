@@ -34,7 +34,11 @@ export function TipBanner({ tipId: _tipId, title, body, onDismiss }: TipBannerPr
       <button
         onClick={async () => {
           setDismissed(true)
-          await onDismiss()
+          try {
+            await onDismiss()
+          } catch {
+            // Dismissal failed — banner stays gone this session but will reappear next load
+          }
         }}
         className="flex-shrink-0 text-xs px-2 py-0.5 rounded"
         style={{ color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer' }}
