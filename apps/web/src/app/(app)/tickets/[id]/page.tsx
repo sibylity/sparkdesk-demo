@@ -9,7 +9,8 @@ import { ReplyBox } from '@/components/tickets/reply-box'
 import { ResolveButton } from '@/components/tickets/resolve-button'
 import { StatusTag } from '@/components/tickets/status-badge'
 import { PrioritySelect } from '@/components/tickets/priority-select'
-import type { Ticket, Customer, TicketMessage, TicketNote, TicketPriority } from '@sparkdesk/shared'
+import { AssignDropdown } from '@/components/tickets/assign-dropdown'
+import type { Ticket, Customer, TicketMessage, TicketNote, TicketPriority, Agent } from '@sparkdesk/shared'
 
 const DEMO_ORG_ID = process.env.DEMO_ORG_ID ?? ''
 const DEMO_AGENT_ID = process.env.DEMO_AGENT_ID ?? ''
@@ -25,9 +26,10 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
   const { id } = await params
   await withAuth({ ensureSignedIn: true })
 
-  const [tickets, ticket] = await Promise.all([
+  const [tickets, ticket, agents] = await Promise.all([
     apiClient.tickets.list(DEMO_ORG_ID) as Promise<TicketWithCustomer[]>,
     apiClient.tickets.get(DEMO_ORG_ID, id) as Promise<TicketDetail | null>,
+    apiClient.agents.list(DEMO_ORG_ID) as Promise<Agent[]>,
   ])
 
   if (!ticket) notFound()
@@ -70,6 +72,12 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
     revalidatePath(`/tickets/${id}`)
   }
 
+  async function handleAssign(agentId: string | null) {
+    'use server'
+    await apiClient.tickets.update(DEMO_ORG_ID, id, { assigneeId: agentId })
+    revalidatePath(`/tickets/${id}`)
+  }
+
   return (
     <div className="flex h-full">
       <TicketList tickets={tickets} selectedId={id} />
@@ -96,7 +104,7 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
             </div>
           </div>
           <div className="flex gap-1.5 pt-0.5">
-            <Button variant="outline" size="sm">Assign</Button>
+            <AssignDropdown agents={agents} assigneeId={ticket.assigneeId} onAssign={handleAssign} />
             <Button variant="outline" size="sm">Snooze</Button>
             <ResolveButton onResolve={handleResolve} isResolved={ticket.status === 'resolved'} />
           </div>
