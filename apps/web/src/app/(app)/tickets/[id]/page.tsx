@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { TicketList } from '@/components/tickets/ticket-list'
 import { TicketThread, buildThreadItems } from '@/components/tickets/ticket-thread'
 import { ReplyBox } from '@/components/tickets/reply-box'
+import { ResolveButton } from '@/components/tickets/resolve-button'
 import { StatusTag, PriorityDot } from '@/components/tickets/status-badge'
 import type { Ticket, Customer, TicketMessage, TicketNote } from '@sparkdesk/shared'
 
@@ -56,6 +57,12 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
     revalidatePath(`/tickets/${id}`)
   }
 
+  async function handleResolve() {
+    'use server'
+    await apiClient.tickets.update(DEMO_ORG_ID, id, { status: 'resolved' })
+    revalidatePath(`/tickets/${id}`)
+  }
+
   return (
     <div className="flex h-full">
       <TicketList tickets={tickets} selectedId={id} />
@@ -84,7 +91,7 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
           <div className="flex gap-1.5 pt-0.5">
             <Button variant="outline" size="sm">Assign</Button>
             <Button variant="outline" size="sm">Snooze</Button>
-            <Button size="sm">Resolve</Button>
+            <ResolveButton onResolve={handleResolve} isResolved={ticket.status === 'resolved'} />
           </div>
         </div>
 
