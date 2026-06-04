@@ -18,14 +18,14 @@ const ORG_ID = process.env.DEMO_ORG_ID ?? ''
 export function registerReplyHandlers(app: App, _client: SparkDeskClient): void {
   app.event('app_mention', async ({ event, say, logger }) => {
     try {
-      const ev = event as { text?: string; ts: string; channel: string }
+      const ev = event as { text?: string; ts: string; thread_ts?: string; channel: string }
       const text = ev.text ?? ''
       const isStatusRequest = text.toLowerCase().includes('status')
 
       if (isStatusRequest) {
         await say({
           text: "I'll pull up the ticket status for you shortly.",
-          thread_ts: ev.ts,
+          thread_ts: ev.thread_ts ?? ev.ts,
         })
       }
 
