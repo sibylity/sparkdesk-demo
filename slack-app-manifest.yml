@@ -1,0 +1,39 @@
+_metadata:
+  major_version: 1
+  minor_version: 1
+
+display_information:
+  name: SparkDesk
+  description: SparkDesk support bot — manage tickets and reply to customers from Slack
+  background_color: "#818CF8"
+
+features:
+  bot_user:
+    display_name: SparkDesk
+    always_online: true
+  slash_commands:
+    - command: /sparkdesk
+      description: Manage SparkDesk tickets from Slack
+      usage_hint: "assign @agent | status | help"
+      should_escape: false
+
+oauth_config:
+  scopes:
+    bot:
+      - channels:history
+      - channels:read
+      - chat:write
+      - app_mentions:read
+      - commands
+      - users:read
+
+settings:
+  event_subscriptions:
+    bot_events:
+      - app_mention
+      - message.channels
+  interactivity:
+    is_enabled: false
+  org_deploy_enabled: false
+  socket_mode_enabled: true
+  token_rotation_enabled: false

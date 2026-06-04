@@ -1,0 +1,8 @@
+# Default owners for everything
+* @sibylity/engineering
+
+# Slack integration
+apps/slack/ @sibylity/engineering
+
+# Shared packages — changes here affect all apps
+packages/ @sibylity/engineering
