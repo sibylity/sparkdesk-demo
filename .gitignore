@@ -1,6 +1,23 @@
 node_modules/
 dist/
+
+# Environment variables
 .env
+.env.local
 *.env.local
+
+# Build artifacts
 .next/
 .turbo/
+*.tsbuildinfo
+
+# IDE / tooling
+.claude/
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+# Misc artifacts
+posthog-setup-report.md
