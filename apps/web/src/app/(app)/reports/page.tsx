@@ -48,7 +48,9 @@ export default async function ReportsPage() {
     { label: 'Closed', count: tickets.filter((t) => t.status === 'closed').length },
   ]
 
-  const recentTickets = tickets.slice(0, 10)
+  const recentTickets = [...tickets]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 10)
 
   return (
     <div className="p-6">
