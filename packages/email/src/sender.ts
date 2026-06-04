@@ -31,11 +31,15 @@ export async function sendEmail({ to, subject, react }: SendEmailOptions): Promi
   const client = getResendClient()
   if (!client) return
 
-  await client.emails.send({
-    from: process.env.EMAIL_FROM ?? 'SparkDesk <noreply@sparkdesk.io>',
-    to,
-    subject,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    react: react as any,
-  })
+  try {
+    await client.emails.send({
+      from: process.env.EMAIL_FROM ?? 'SparkDesk <noreply@sparkdesk.io>',
+      to,
+      subject,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      react: react as any,
+    })
+  } catch (err) {
+    console.error('[sendEmail] failed to send to', to, err)
+  }
 }
