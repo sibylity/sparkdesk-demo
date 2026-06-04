@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { TicketItem } from './ticket-item'
 import type { Ticket, Customer, TicketStatus } from '@sparkdesk/shared'
+import { trackInboxFilterApplied } from '@/analytics/events'
 
 type TicketWithCustomer = Ticket & { customer: Customer }
 
@@ -44,7 +45,13 @@ export function TicketList({ tickets, selectedId }: TicketListProps) {
         {filters.map((f) => (
           <button
             key={f.value}
-            onClick={() => setActiveFilter(f.value)}
+            onClick={() => {
+              setActiveFilter(f.value)
+              trackInboxFilterApplied({
+                filterType: 'status',
+                filterValue: f.value,
+              })
+            }}
             className="px-2.5 py-[3px] rounded text-[12px] font-medium transition-colors border-none"
             style={{
               background: activeFilter === f.value ? 'var(--bg-surface)' : 'transparent',

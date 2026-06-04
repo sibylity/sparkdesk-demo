@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
+import { trackNavItemClicked } from '@/analytics/events'
 
 const navItems = [
   { label: 'Inbox', href: '/inbox' },
@@ -47,6 +48,7 @@ export function Sidebar({ agentName, agentInitials }: SidebarProps) {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => trackNavItemClicked({ destination: item.href, label: item.label })}
               className={cn(
                 'flex items-center justify-between rounded px-2.5 py-[5px] text-[13px] transition-colors',
                 pathname === item.href
