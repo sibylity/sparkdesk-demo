@@ -64,18 +64,21 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
     'use server'
     await apiClient.tickets.update(DEMO_ORG_ID, id, { status: 'resolved' })
     revalidatePath(`/tickets/${id}`)
+    revalidatePath('/tickets')
   }
 
   async function handlePriorityChange(priority: TicketPriority) {
     'use server'
     await apiClient.tickets.update(DEMO_ORG_ID, id, { priority })
     revalidatePath(`/tickets/${id}`)
+    revalidatePath('/tickets')
   }
 
   async function handleAssign(agentId: string | null) {
     'use server'
     await apiClient.tickets.update(DEMO_ORG_ID, id, { assigneeId: agentId })
     revalidatePath(`/tickets/${id}`)
+    revalidatePath('/tickets')
   }
 
   return (
