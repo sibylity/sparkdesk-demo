@@ -16,12 +16,14 @@
     "@hono/zod-validator": "^0.8.0",
     "@prisma/client": "^5.16.0",
     "@sparkdesk/analytics": "workspace:*",
+    "@sparkdesk/email": "workspace:*",
     "@sparkdesk/shared": "workspace:*",
     "hono": "^4.5.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
     "prisma": "^5.16.0",
     "tsx": "^4.16.0",
     "typescript": "^5.5.0"

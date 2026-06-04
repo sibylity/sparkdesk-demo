@@ -20,7 +20,7 @@ export interface SendEmailOptions {
   to: string
   subject: string
   /** React Email template element — Resend renders it to HTML internally */
-  react: React.ReactElement
+  react: React.ReactNode
 }
 
 /**
@@ -35,6 +35,7 @@ export async function sendEmail({ to, subject, react }: SendEmailOptions): Promi
     from: process.env.EMAIL_FROM ?? 'SparkDesk <noreply@sparkdesk.io>',
     to,
     subject,
-    react,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    react: react as any,
   })
 }

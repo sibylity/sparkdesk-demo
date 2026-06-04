@@ -9,6 +9,16 @@ import {
   AddNoteSchema,
 } from '@sparkdesk/shared'
 import { capture } from '@sparkdesk/analytics'
+import * as React from 'react'
+import {
+  sendEmail,
+  TicketCreatedEmail,
+  TicketRepliedEmail,
+  TicketResolvedEmail,
+  AgentAssignedEmail,
+} from '@sparkdesk/email'
+
+const APP_URL = process.env.WEB_APP_URL ?? 'http://localhost:3000'
 
 export const ticketRoutes = new Hono()
 
@@ -89,6 +99,17 @@ ticketRoutes.post('/', zValidator('json', CreateTicketSchema), async (c) => {
     assigneeId: ticket.assigneeId ?? undefined,
   })
 
+  void sendEmail({
+    to: ticket.customer.email,
+    subject: `[SparkDesk] We've received your request: ${ticket.subject}`,
+    react: React.createElement(TicketCreatedEmail, {
+      customerName: ticket.customer.name,
+      ticketSubject: ticket.subject,
+      ticketId: ticket.id,
+      supportUrl: `${APP_URL}/tickets/${ticket.id}`,
+    }),
+  })
+
   return c.json(ticket, 201)
 })
 
@@ -121,6 +142,47 @@ ticketRoutes.patch('/:id', zValidator('json', UpdateTicketSchema), async (c) => 
     ...(data.snoozedUntil && { snoozedUntil: data.snoozedUntil }),
   })
 
+  if (data.status === 'resolved') {
+    const resolvedTicket = await db.ticket.findFirst({
+      where: { id: c.req.param('id') },
+      include: { customer: true },
+    })
+    if (resolvedTicket) {
+      void sendEmail({
+        to: resolvedTicket.customer.email,
+        subject: `[SparkDesk] Your ticket has been resolved: ${resolvedTicket.subject}`,
+        react: React.createElement(TicketResolvedEmail, {
+          customerName: resolvedTicket.customer.name,
+          ticketSubject: resolvedTicket.subject,
+          ticketId: resolvedTicket.id,
+          agentName: 'Support Team',
+          supportUrl: `${APP_URL}/tickets/${resolvedTicket.id}`,
+        }),
+      })
+    }
+  }
+
+  if ('assigneeId' in data && data.assigneeId) {
+    const assignedTicket = await db.ticket.findFirst({
+      where: { id: c.req.param('id') },
+      include: { customer: true, assignee: true },
+    })
+    if (assignedTicket?.assignee) {
+      void sendEmail({
+        to: assignedTicket.assignee.email,
+        subject: `[SparkDesk] Ticket assigned to you: ${assignedTicket.subject}`,
+        react: React.createElement(AgentAssignedEmail, {
+          agentName: assignedTicket.assignee.name,
+          ticketSubject: assignedTicket.subject,
+          ticketId: assignedTicket.id,
+          customerName: assignedTicket.customer.name,
+          priority: assignedTicket.priority as 'urgent' | 'high' | 'normal' | 'low',
+          dashboardUrl: `${APP_URL}/tickets/${assignedTicket.id}`,
+        }),
+      })
+    }
+  }
+
   return c.json({ ok: true })
 })
 
@@ -148,6 +210,25 @@ ticketRoutes.post('/:id/reply', zValidator('json', ReplyTicketSchema), async (c)
     ticketId: c.req.param('id'),
     agentId,
   })
+
+  const ticketForEmail = await db.ticket.findFirst({
+    where: { id: c.req.param('id') },
+    include: { customer: true },
+  })
+  if (ticketForEmail) {
+    void sendEmail({
+      to: ticketForEmail.customer.email,
+      subject: `[SparkDesk] New reply on your ticket: ${ticketForEmail.subject}`,
+      react: React.createElement(TicketRepliedEmail, {
+        customerName: ticketForEmail.customer.name,
+        ticketSubject: ticketForEmail.subject,
+        ticketId: ticketForEmail.id,
+        agentName: 'Support Team',
+        replyBody: body,
+        supportUrl: `${APP_URL}/tickets/${ticketForEmail.id}`,
+      }),
+    })
+  }
 
   return c.json(message, 201)
 })
