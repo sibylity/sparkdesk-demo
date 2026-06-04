@@ -1,9 +1,13 @@
 import * as React from 'react'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 describe('sendEmail', () => {
   beforeEach(() => {
     vi.resetModules()
+    delete process.env.RESEND_API_KEY
+  })
+
+  afterEach(() => {
     delete process.env.RESEND_API_KEY
   })
 
