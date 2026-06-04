@@ -31,7 +31,13 @@ function ToggleRow({ toggle, onToggle }: { toggle: Toggle; onToggle: (key: strin
   function handleChange() {
     const next = !enabled
     setEnabled(next)
-    startTransition(() => onToggle(toggle.key, next))
+    startTransition(async () => {
+      try {
+        await onToggle(toggle.key, next)
+      } catch {
+        setEnabled(enabled)
+      }
+    })
   }
 
   return (
