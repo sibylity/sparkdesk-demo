@@ -12,8 +12,14 @@ async function getLdClient(): Promise<LDClient | null> {
 
   if (!_initPromise) {
     _initPromise = (async () => {
-      _client = init(sdkKey, { offline: false })
-      await _client.waitForInitialization()
+      try {
+        _client = init(sdkKey)
+        await _client.waitForInitialization()
+      } catch (err) {
+        _initPromise = null
+        _client = null
+        throw err
+      }
     })()
   }
 

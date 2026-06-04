@@ -42,6 +42,10 @@ settingsRoutes.patch('/toggles', async (c) => {
     }
   }
 
+  if (Object.keys(body).length > 0 && Object.keys(updates).length === 0) {
+    return c.json({ error: 'No valid toggle keys in request body' }, 400)
+  }
+
   const org = await db.organization.findUnique({ where: { id: orgId } })
   if (!org) return c.json({ error: 'Organization not found' }, 404)
 
