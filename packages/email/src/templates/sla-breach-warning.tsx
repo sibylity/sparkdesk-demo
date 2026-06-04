@@ -9,7 +9,11 @@ export interface SlaBreachWarningEmailProps {
   ticketSubject: string
   ticketId: string
   customerName: string
-  /** ISO 8601 deadline string, e.g. "2026-06-04T14:00:00Z" */
+  /**
+   * ISO 8601 deadline string, e.g. "2026-06-04T14:00:00Z".
+   * Displayed using the server's local timezone — pass a pre-formatted
+   * string if you need the agent's local time instead.
+   */
   slaDeadline: string
   /** How many minutes remain before the SLA is breached */
   minutesRemaining: number
