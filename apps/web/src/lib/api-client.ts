@@ -8,6 +8,15 @@ interface RequestOptions {
   body?: unknown
 }
 
+interface ToggleDefinition {
+  key: string
+  name: string
+  description: string
+  defaultEnabled: boolean
+  requiredPlan: string | null
+  enabled: boolean
+}
+
 async function apiRequest<T>(path: string, options: RequestOptions): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     method: options.method ?? 'GET',
@@ -71,7 +80,7 @@ export const apiClient = {
   },
   settings: {
     getToggles: (orgId: string) =>
-      apiRequest<{ toggles: Array<{ key: string; name: string; description: string; defaultEnabled: boolean; requiredPlan: string | null; enabled: boolean }> }>(
+      apiRequest<{ toggles: ToggleDefinition[] }>(
         '/internal/settings/toggles',
         { organizationId: orgId }
       ),
