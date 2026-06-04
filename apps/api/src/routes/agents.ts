@@ -43,3 +43,26 @@ agentRoutes.patch('/:id', zValidator('json', UpdateAgentSchema), async (c) => {
 
   return c.json({ ok: true })
 })
+
+// Dismiss a feature tip for an agent
+agentRoutes.post('/:id/dismiss-tip', async (c) => {
+  const orgId = c.req.header('X-Organization-Id')
+  if (!orgId) return c.json({ error: 'Missing X-Organization-Id' }, 400)
+
+  const body = await c.req.json<{ tipId?: string }>()
+  if (!body.tipId) return c.json({ error: 'Missing tipId' }, 400)
+
+  const agent = await db.agent.findFirst({
+    where: { id: c.req.param('id'), organizationId: orgId },
+  })
+  if (!agent) return c.json({ error: 'Not found' }, 404)
+
+  if (!agent.dismissedTips.includes(body.tipId)) {
+    await db.agent.update({
+      where: { id: c.req.param('id') },
+      data: { dismissedTips: { push: body.tipId } },
+    })
+  }
+
+  return c.json({ ok: true })
+})

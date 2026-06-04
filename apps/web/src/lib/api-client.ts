@@ -56,4 +56,11 @@ export const apiClient = {
     list: (orgId: string) =>
       apiRequest<unknown[]>('/internal/agents', { organizationId: orgId }),
   },
+  dismissTip: (orgId: string, agentId: string, tipId: string) =>
+    apiRequest<{ ok: boolean }>(`/internal/agents/${agentId}/dismiss-tip`, {
+      organizationId: orgId,
+      agentId,
+      method: 'POST',
+      body: { tipId },
+    }),
 }
