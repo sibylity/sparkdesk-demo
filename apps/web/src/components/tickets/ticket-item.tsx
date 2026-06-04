@@ -1,5 +1,7 @@
+'use client'
 import Link from 'next/link'
 import { StatusTag, PriorityDot } from './status-badge'
+import { trackTicketOpened } from '@/analytics/events'
 import type { Ticket, Customer } from '@sparkdesk/shared'
 
 interface TicketItemProps {
@@ -20,6 +22,7 @@ export function TicketItem({ ticket, selected }: TicketItemProps) {
   return (
     <Link
       href={`/tickets/${ticket.id}`}
+      onClick={() => trackTicketOpened({ ticketId: ticket.id, ticketStatus: ticket.status, ticketPriority: ticket.priority })}
       className="block px-4 py-[11px] border-b relative cursor-pointer transition-colors"
       style={{
         borderColor: 'var(--border)',

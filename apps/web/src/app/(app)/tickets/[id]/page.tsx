@@ -89,7 +89,7 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
         </div>
 
         <TicketThread items={threadItems} />
-        <ReplyBox onReply={handleReply} onNote={handleNote} />
+        <ReplyBox ticketId={id} onReply={handleReply} onNote={handleNote} />
       </div>
     </div>
   )

@@ -2,13 +2,15 @@
 import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { trackReplySubmitted } from '@/analytics/events'
 
 interface ReplyBoxProps {
+  ticketId: string
   onReply: (body: string) => Promise<void>
   onNote: (body: string) => Promise<void>
 }
 
-export function ReplyBox({ onReply, onNote }: ReplyBoxProps) {
+export function ReplyBox({ ticketId, onReply, onNote }: ReplyBoxProps) {
   const [tab, setTab] = useState<'reply' | 'note'>('reply')
   const [body, setBody] = useState('')
   const [isPending, startTransition] = useTransition()
@@ -18,6 +20,7 @@ export function ReplyBox({ onReply, onNote }: ReplyBoxProps) {
     startTransition(async () => {
       if (tab === 'reply') await onReply(body)
       else await onNote(body)
+      trackReplySubmitted({ ticketId, replyType: tab, bodyLength: body.length })
       setBody('')
     })
   }
