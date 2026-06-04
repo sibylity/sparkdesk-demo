@@ -5,6 +5,7 @@ import { cors } from 'hono/cors'
 import { ticketRoutes } from './routes/tickets'
 import { customerRoutes } from './routes/customers'
 import { agentRoutes } from './routes/agents'
+import { settingsRoutes } from './routes/settings'
 import { getAnalyticsClient, shutdownAnalytics } from '@sparkdesk/analytics'
 
 const app = new Hono()
@@ -17,6 +18,7 @@ app.get('/health', (c) => c.json({ ok: true }))
 app.route('/internal/tickets', ticketRoutes)
 app.route('/internal/customers', customerRoutes)
 app.route('/internal/agents', agentRoutes)
+app.route('/internal/settings', settingsRoutes)
 
 app.onError((err, c) => {
   const agentId = c.req.header('X-Agent-Id')

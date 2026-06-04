@@ -14,6 +14,7 @@ model Organization {
   plan                 Plan     @default(free)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
+  featureToggles       Json     @default("{}")
 
   agents    Agent[]
   customers Customer[]
@@ -34,6 +35,7 @@ model Agent {
   workosUserId   String      @unique
   organizationId String
   createdAt      DateTime    @default(now())
+  dismissedTips  String[]
 
   organization   Organization @relation(fields: [organizationId], references: [id])
   assignedTickets Ticket[]    @relation("AssignedTickets")
