@@ -1,4 +1,3 @@
-import { withAuth } from '@workos-inc/authkit-nextjs'
 import { apiClient } from '@/lib/api-client'
 import type { Ticket, Customer } from '@sparkdesk/shared'
 
@@ -16,9 +15,13 @@ function StatCard({ label, value, accent }: StatCardProps) {
   return (
     <div
       className="rounded-lg p-5"
-      style={{ border: '1px solid var(--border)', background: 'var(--bg-surface)' }}
+      style={{
+        border: '1px solid var(--border)',
+        background: 'linear-gradient(180deg, var(--bg-raised), var(--bg-surface))',
+        boxShadow: 'var(--shadow-soft)',
+      }}
     >
-      <p className="text-[12px] font-medium mb-2" style={{ color: 'var(--text-muted)' }}>
+      <p className="mb-3 text-[11px] font-bold uppercase" style={{ color: 'var(--text-muted)' }}>
         {label}
       </p>
       <p
@@ -32,7 +35,6 @@ function StatCard({ label, value, accent }: StatCardProps) {
 }
 
 export default async function ReportsPage() {
-  await withAuth({ ensureSignedIn: true })
   const tickets = await apiClient.tickets.list(DEMO_ORG_ID) as TicketWithCustomer[]
 
   const open = tickets.filter((t) => t.status === 'open').length
@@ -53,17 +55,15 @@ export default async function ReportsPage() {
     .slice(0, 10)
 
   return (
-    <div className="p-6">
+    <div className="app-page">
       <div className="mb-6">
-        <h1 className="text-[16px] font-semibold tracking-tight mb-1" style={{ color: 'var(--text-primary)' }}>
-          Reports
-        </h1>
-        <p className="text-[13px]" style={{ color: 'var(--text-muted)' }}>
+        <div className="page-kicker">Performance</div>
+        <h1 className="page-title mt-1">Reports</h1>
+        <p className="page-copy mt-1">
           {tickets.length} total tickets
         </p>
       </div>
 
-      {/* Stat cards */}
       <div className="grid grid-cols-4 gap-4 mb-8">
         <StatCard label="Open" value={open} accent="var(--accent-color)" />
         <StatCard label="In Progress" value={inProgress} />
@@ -72,47 +72,39 @@ export default async function ReportsPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        {/* By status */}
-        <div
-          className="rounded-lg overflow-hidden"
-          style={{ border: '1px solid var(--border)', background: 'var(--bg-surface)' }}
-        >
+        <div className="surface overflow-hidden">
           <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
             <h2 className="text-[13.5px] font-semibold" style={{ color: 'var(--text-primary)' }}>
               Tickets by Status
             </h2>
           </div>
-          <table className="w-full text-[13px]">
+          <table className="data-table">
             <tbody>
               {byStatus.map((row) => (
-                <tr key={row.label} style={{ borderBottom: '1px solid var(--border)' }}>
-                  <td className="py-2.5 px-5" style={{ color: 'var(--text-secondary)' }}>{row.label}</td>
-                  <td className="py-2.5 px-5 text-right font-medium" style={{ color: 'var(--text-primary)' }}>{row.count}</td>
+                <tr key={row.label}>
+                  <td style={{ color: 'var(--text-secondary)' }}>{row.label}</td>
+                  <td className="text-right font-semibold" style={{ color: 'var(--text-primary)' }}>{row.count}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        {/* Recent tickets */}
-        <div
-          className="rounded-lg overflow-hidden"
-          style={{ border: '1px solid var(--border)', background: 'var(--bg-surface)' }}
-        >
+        <div className="surface overflow-hidden">
           <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
             <h2 className="text-[13.5px] font-semibold" style={{ color: 'var(--text-primary)' }}>
               Recent Tickets
             </h2>
           </div>
-          <table className="w-full text-[13px]">
+          <table className="data-table">
             <tbody>
               {recentTickets.map((t) => (
-                <tr key={t.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                  <td className="py-2.5 px-5 max-w-0 truncate" style={{ color: 'var(--text-primary)', width: '55%' }}>
+                <tr key={t.id}>
+                  <td className="max-w-0 truncate font-semibold" style={{ color: 'var(--text-primary)', width: '55%' }}>
                     {t.subject}
                   </td>
-                  <td className="py-2.5 px-5" style={{ color: 'var(--text-muted)' }}>{t.customer.name}</td>
-                  <td className="py-2.5 px-5 text-right" style={{ color: 'var(--text-secondary)' }}>
+                  <td style={{ color: 'var(--text-muted)' }}>{t.customer.name}</td>
+                  <td className="text-right" style={{ color: 'var(--text-secondary)' }}>
                     {new Date(t.createdAt).toLocaleDateString()}
                   </td>
                 </tr>

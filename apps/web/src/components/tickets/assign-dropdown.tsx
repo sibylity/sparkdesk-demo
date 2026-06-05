@@ -1,5 +1,6 @@
 'use client'
 import { useTransition } from 'react'
+import { UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { Agent } from '@sparkdesk/shared'
 
@@ -33,6 +34,7 @@ export function AssignDropdown({ agents, assigneeId, onAssign }: AssignDropdownP
         ))}
       </select>
       <Button variant="outline" size="sm" disabled={isPending}>
+        <UserPlus aria-hidden="true" />
         {isPending ? 'Assigning…' : current ? current.name : 'Assign'}
       </Button>
     </div>

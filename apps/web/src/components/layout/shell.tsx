@@ -8,7 +8,7 @@ interface ShellProps {
 
 export function Shell({ children, agentName, agentInitials }: ShellProps) {
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg)' }}>
+    <div className="flex h-screen overflow-hidden" style={{ background: 'transparent' }}>
       <Sidebar agentName={agentName} agentInitials={agentInitials} />
       <main className="flex-1 overflow-hidden">{children}</main>
     </div>

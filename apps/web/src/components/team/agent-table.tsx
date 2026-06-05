@@ -9,12 +9,12 @@ interface AgentTableProps {
 
 export function AgentTable({ agents, onRoleChange }: AgentTableProps) {
   return (
-    <table className="w-full text-[13px]">
+    <table className="data-table">
       <thead>
-        <tr style={{ borderBottom: '1px solid var(--border)' }}>
-          <th className="text-left py-2 px-4 font-medium" style={{ color: 'var(--text-muted)' }}>Name</th>
-          <th className="text-left py-2 px-4 font-medium" style={{ color: 'var(--text-muted)' }}>Email</th>
-          <th className="text-left py-2 px-4 font-medium" style={{ color: 'var(--text-muted)' }}>Role</th>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
         </tr>
       </thead>
       <tbody>
@@ -30,10 +30,10 @@ function AgentRow({ agent, onRoleChange }: { agent: Agent; onRoleChange: (agentI
   const [isPending, startTransition] = useTransition()
 
   return (
-    <tr style={{ borderBottom: '1px solid var(--border)' }}>
-      <td className="py-3 px-4" style={{ color: 'var(--text-primary)' }}>{agent.name}</td>
-      <td className="py-3 px-4" style={{ color: 'var(--text-secondary)' }}>{agent.email}</td>
-      <td className="py-3 px-4">
+    <tr>
+      <td className="font-semibold" style={{ color: 'var(--text-primary)' }}>{agent.name}</td>
+      <td style={{ color: 'var(--text-secondary)' }}>{agent.email}</td>
+      <td>
         <select
           value={agent.role}
           disabled={isPending}
@@ -41,11 +41,11 @@ function AgentRow({ agent, onRoleChange }: { agent: Agent; onRoleChange: (agentI
             const next = e.target.value as AgentRole
             startTransition(() => onRoleChange(agent.id, next))
           }}
-          className="text-[12px] px-2 py-1 rounded border bg-transparent cursor-pointer"
-          style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)', background: 'var(--bg-surface)' }}
+          className="cursor-pointer rounded-lg border px-2 py-1 text-[12px] font-semibold"
+          style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)', background: 'var(--bg)' }}
         >
-          <option value="agent" style={{ background: '#131316' }}>Agent</option>
-          <option value="admin" style={{ background: '#131316' }}>Admin</option>
+          <option value="agent" style={{ background: '#151C24' }}>Agent</option>
+          <option value="admin" style={{ background: '#151C24' }}>Admin</option>
         </select>
       </td>
     </tr>

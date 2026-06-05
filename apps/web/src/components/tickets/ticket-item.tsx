@@ -23,36 +23,40 @@ export function TicketItem({ ticket, selected }: TicketItemProps) {
     <Link
       href={`/tickets/${ticket.id}`}
       onClick={() => trackTicketOpened({ ticketId: ticket.id, ticketStatus: ticket.status, ticketPriority: ticket.priority })}
-      className="block px-4 py-[11px] border-b relative cursor-pointer transition-colors"
+      className="relative mb-1 block cursor-pointer rounded-lg border px-3.5 py-3 transition-colors"
       style={{
-        borderColor: 'var(--border)',
+        borderColor: selected ? 'var(--accent-border)' : 'transparent',
         background: selected ? 'var(--bg-selected)' : 'transparent',
       }}
     >
       {selected && (
         <div
-          className="absolute left-0 top-0 bottom-0 w-[2px]"
+          className="absolute bottom-2 left-0 top-2 w-[3px] rounded-r-full"
           style={{ background: 'var(--accent-color)' }}
         />
       )}
-      <div className="flex items-center justify-between gap-2 mb-[3px]">
+      <div className="mb-2 flex items-start justify-between gap-3">
         <span
-          className="text-[13px] font-[560] truncate"
+          className="min-w-0 flex-1 truncate text-[13.5px] font-[680] leading-snug"
           style={{ color: 'var(--text-primary)' }}
         >
           {ticket.subject}
         </span>
-        <span className="text-[11px] flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
+        <span className="flex-shrink-0 text-[11px] font-semibold" style={{ color: 'var(--text-muted)' }}>
           {timeAgo(ticket.updatedAt)}
         </span>
       </div>
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-2">
         <PriorityDot priority={ticket.priority} />
-        <span
-          className="text-[12px] truncate flex-1"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          {ticket.customer.name}
+        <span className="min-w-0 flex-1 truncate text-[12px]">
+          <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>
+            {ticket.customer.name}
+          </span>
+          {ticket.customer.company && (
+            <span className="font-normal" style={{ color: 'var(--text-muted)' }}>
+              {' · '}{ticket.customer.company}
+            </span>
+          )}
         </span>
         <StatusTag status={ticket.status} />
       </div>

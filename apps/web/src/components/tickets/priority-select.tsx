@@ -31,11 +31,11 @@ export function PrioritySelect({ priority, onPriorityChange }: PrioritySelectPro
           const next = e.target.value as TicketPriority
           startTransition(() => onPriorityChange(next))
         }}
-        className="text-[12px] font-medium bg-transparent border-none outline-none cursor-pointer"
-        style={{ color: 'var(--text-muted)' }}
+        className="appearance-none cursor-pointer border-none bg-transparent text-[12px] font-semibold outline-none"
+        style={{ color: current.color }}
       >
         {priorities.map((p) => (
-          <option key={p.value} value={p.value} style={{ background: '#0E0E11' }}>
+          <option key={p.value} value={p.value} style={{ background: '#151C24' }}>
             {p.label}
           </option>
         ))}

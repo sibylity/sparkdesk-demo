@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { Search } from 'lucide-react'
 import type { Customer } from '@sparkdesk/shared'
 
 interface CustomerListProps {
@@ -20,25 +21,26 @@ export function CustomerList({ customers }: CustomerListProps) {
 
   return (
     <div>
-      {/* Search */}
       <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--border)' }}>
-        <input
-          type="text"
-          placeholder="Search customers…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full text-[13px] bg-transparent border-none outline-none"
-          style={{ color: 'var(--text-primary)' }}
-        />
+        <div className="flex h-9 items-center gap-2 rounded-lg border px-3" style={{ borderColor: 'var(--border)', background: 'var(--bg)' }}>
+          <Search className="size-4" style={{ color: 'var(--text-muted)' }} aria-hidden="true" />
+          <input
+            type="text"
+            placeholder="Search customers..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="min-w-0 flex-1 bg-transparent text-[13px] outline-none"
+            style={{ color: 'var(--text-primary)' }}
+          />
+        </div>
       </div>
 
-      {/* Table */}
-      <table className="w-full text-[13px]">
+      <table className="data-table">
         <thead>
-          <tr style={{ borderBottom: '1px solid var(--border)' }}>
-            <th className="text-left py-2 px-4 font-medium" style={{ color: 'var(--text-muted)' }}>Name</th>
-            <th className="text-left py-2 px-4 font-medium" style={{ color: 'var(--text-muted)' }}>Email</th>
-            <th className="text-left py-2 px-4 font-medium" style={{ color: 'var(--text-muted)' }}>Company</th>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Company</th>
           </tr>
         </thead>
         <tbody>
@@ -50,10 +52,10 @@ export function CustomerList({ customers }: CustomerListProps) {
             </tr>
           ) : (
             filtered.map((c) => (
-              <tr key={c.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td className="py-3 px-4" style={{ color: 'var(--text-primary)' }}>{c.name}</td>
-                <td className="py-3 px-4" style={{ color: 'var(--text-secondary)' }}>{c.email}</td>
-                <td className="py-3 px-4" style={{ color: 'var(--text-muted)' }}>{c.company ?? '—'}</td>
+              <tr key={c.id}>
+                <td className="font-semibold" style={{ color: 'var(--text-primary)' }}>{c.name}</td>
+                <td style={{ color: 'var(--text-secondary)' }}>{c.email}</td>
+                <td style={{ color: 'var(--text-muted)' }}>{c.company ?? '-'}</td>
               </tr>
             ))
           )}

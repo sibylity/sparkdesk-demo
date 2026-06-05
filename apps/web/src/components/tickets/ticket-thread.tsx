@@ -25,20 +25,20 @@ function initials(name?: string) {
 
 export function TicketThread({ items }: { items: ThreadItem[] }) {
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-[18px]">
+    <div className="flex-1 overflow-y-auto px-8 py-6 flex flex-col gap-5">
       {items.map((item) => {
         if (item.type === 'note') {
           return (
             <div
               key={item.id}
-              className="flex gap-2.5 items-start rounded-lg px-3.5 py-2.5 text-[12.5px] leading-relaxed"
+              className="mx-auto flex max-w-[760px] items-start gap-3 rounded-lg px-3.5 py-3 text-[12.5px] leading-relaxed"
               style={{
-                background: '#FBBF2408',
-                border: '1px solid #FBBF2420',
-                color: '#FBBF24',
+                background: 'color-mix(in srgb, var(--waiting) 9%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--waiting) 26%, transparent)',
+                color: 'var(--waiting)',
               }}
             >
-              <span className="text-[10.5px] font-semibold uppercase tracking-wider opacity-60 mt-px flex-shrink-0">
+              <span className="mt-px flex-shrink-0 text-[10.5px] font-bold uppercase opacity-70">
                 Note
               </span>
               <span>{item.body}</span>
@@ -50,31 +50,37 @@ export function TicketThread({ items }: { items: ThreadItem[] }) {
         return (
           <div key={item.id} className={`flex gap-2.5 items-start ${isAgent ? 'flex-row-reverse' : ''}`}>
             <div
-              className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0"
+              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
               style={
                 isAgent
-                  ? { background: 'var(--accent-dim)', color: 'var(--accent-color)' }
-                  : { background: 'var(--bg-surface)', color: 'var(--text-muted)' }
+                  ? {
+                      background: 'var(--accent-dim)',
+                      color: 'var(--accent-strong)',
+                      border: '1px solid var(--accent-border)',
+                    }
+                  : {
+                      background: 'var(--bg-raised)',
+                      color: 'var(--text-secondary)',
+                      border: '1px solid var(--border)',
+                    }
               }
             >
               {initials(item.authorName)}
             </div>
             <div className={`max-w-[76%] ${isAgent ? 'items-end' : 'items-start'} flex flex-col`}>
               <div
-                className="px-3.5 py-2.5 rounded-lg text-[13px] leading-relaxed"
+                className="rounded-lg px-4 py-3 text-[13px] leading-relaxed shadow-sm"
                 style={
                   isAgent
                     ? {
                         background: 'var(--accent-dim)',
                         border: '1px solid var(--accent-border)',
                         color: 'var(--text-primary)',
-                        borderRadius: '8px 2px 8px 8px',
                       }
                     : {
                         background: 'var(--bg-surface)',
                         border: '1px solid var(--border)',
                         color: 'var(--text-primary)',
-                        borderRadius: '2px 8px 8px 8px',
                       }
                 }
               >

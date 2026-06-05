@@ -1,4 +1,3 @@
-import { withAuth } from '@workos-inc/authkit-nextjs'
 import { apiClient } from '@/lib/api-client'
 import { CustomerList } from '@/components/customers/customer-list'
 import type { Customer } from '@sparkdesk/shared'
@@ -6,23 +5,20 @@ import type { Customer } from '@sparkdesk/shared'
 const DEMO_ORG_ID = process.env.DEMO_ORG_ID ?? ''
 
 export default async function CustomersPage() {
-  await withAuth({ ensureSignedIn: true })
   const customers = await apiClient.customers.list(DEMO_ORG_ID) as Customer[]
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-[16px] font-semibold tracking-tight mb-1" style={{ color: 'var(--text-primary)' }}>
-          Customers
-        </h1>
-        <p className="text-[13px]" style={{ color: 'var(--text-muted)' }}>
-          {customers.length} customer{customers.length !== 1 ? 's' : ''}
-        </p>
+    <div className="app-page">
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <div className="page-kicker">Directory</div>
+          <h1 className="page-title mt-1">Customers</h1>
+          <p className="page-copy mt-1">
+            {customers.length} customer{customers.length !== 1 ? 's' : ''} across active support conversations
+          </p>
+        </div>
       </div>
-      <div
-        className="rounded-lg overflow-hidden"
-        style={{ border: '1px solid var(--border)', background: 'var(--bg-surface)' }}
-      >
+      <div className="surface overflow-hidden">
         <CustomerList customers={customers} />
       </div>
     </div>
