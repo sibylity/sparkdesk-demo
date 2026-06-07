@@ -1,17 +1,16 @@
 import { notFound } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import { Clock } from 'lucide-react'
 import { apiClient } from '@/lib/api-client'
 import { getCurrentAgentId } from '@/lib/current-agent'
 import { Button } from '@/components/ui/button'
 import { TicketList } from '@/components/tickets/ticket-list'
 import { TicketThread, buildThreadItems } from '@/components/tickets/ticket-thread'
 import { ReplyBox } from '@/components/tickets/reply-box'
-import { ResolveButton } from '@/components/tickets/resolve-button'
+import { ResolveButton, WaitingButton } from '@/components/tickets/ticket-status-actions'
 import { StatusTag } from '@/components/tickets/status-badge'
 import { PrioritySelect } from '@/components/tickets/priority-select'
 import { AssignDropdown } from '@/components/tickets/assign-dropdown'
-import type { Ticket, Customer, TicketMessage, TicketNote, TicketPriority, Agent } from '@sparkdesk/shared'
+import type { Ticket, Customer, TicketMessage, TicketNote, TicketPriority, Agent, TicketStatus } from '@sparkdesk/shared'
 
 const DEMO_ORG_ID = process.env.DEMO_ORG_ID ?? ''
 
@@ -60,9 +59,9 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
     revalidatePath(`/tickets/${id}`)
   }
 
-  async function handleResolve() {
+  async function handleStatusChange(status: TicketStatus) {
     'use server'
-    await apiClient.tickets.update(DEMO_ORG_ID, id, { status: 'resolved' })
+    await apiClient.tickets.update(DEMO_ORG_ID, id, { status })
     revalidatePath(`/tickets/${id}`)
     revalidatePath('/tickets')
   }
@@ -116,11 +115,8 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
           </div>
           <div className="flex flex-shrink-0 gap-2 pt-2">
             <AssignDropdown agents={agents} assigneeId={ticket.assigneeId} onAssign={handleAssign} />
-            <Button variant="outline" size="sm">
-              <Clock aria-hidden="true" />
-              Snooze
-            </Button>
-            <ResolveButton onResolve={handleResolve} isResolved={ticket.status === 'resolved'} />
+            <WaitingButton onStatusChange={handleStatusChange} status={ticket.status} />
+            <ResolveButton onStatusChange={handleStatusChange} status={ticket.status} />
           </div>
         </div>
 

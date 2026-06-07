@@ -21,8 +21,13 @@ interface TicketListProps {
   selectedId?: string
 }
 
+const FILTER_VALUES = new Set(filters.map((f) => f.value))
+
 export function TicketList({ tickets, selectedId }: TicketListProps) {
-  const [activeFilter, setActiveFilter] = useState<TicketStatus | 'all'>('open')
+  const selectedStatus = tickets.find((t) => t.id === selectedId)?.status
+  const initialFilter: TicketStatus | 'all' =
+    selectedStatus && FILTER_VALUES.has(selectedStatus) ? selectedStatus : 'open'
+  const [activeFilter, setActiveFilter] = useState<TicketStatus | 'all'>(initialFilter)
   const [query, setQuery] = useState('')
 
   const statusFiltered =

@@ -87,6 +87,7 @@ pnpm dev
 | `POSTHOG_API_KEY` | — | PostHog server-side key |
 | `RESEND_API_KEY` | — | Resend API key for transactional email |
 | `LAUNCHDARKLY_SDK_KEY` | — | LaunchDarkly Node SDK key |
+| `DEMO_USER_WORKOS_ID` | — | Your real WorkOS user ID — when set, the seed assigns it to the demo agent so you're recognized as yourself (rather than "Jamie Diaz") after logging in |
 
 ### `apps/web/.env.local`
 
@@ -99,8 +100,8 @@ pnpm dev
 | `NEXT_PUBLIC_WORKOS_REDIRECT_URI` | ✅ | Auth callback URL |
 | `INTERNAL_API_URL` | ✅ | API base URL |
 | `INTERNAL_API_SECRET` | ✅ | Shared service token |
-| `DEMO_ORG_ID` | ✅ | Seeded demo organization ID |
-| `DEMO_AGENT_ID` | ✅ | Seeded demo agent ID |
+| `DEMO_ORG_ID` | ✅ | Seeded demo organization ID (`demo-org`) |
+| `DEMO_AGENT_ID` | ✅ | Fallback demo agent ID (`demo-agent`) — used if no agent matches your WorkOS user |
 | `NEXT_PUBLIC_POSTHOG_KEY` | — | PostHog browser key |
 
 ### `apps/slack/.env`
@@ -133,7 +134,13 @@ pnpm --filter @sparkdesk/api db:push      # Push schema changes (dev)
 pnpm --filter @sparkdesk/api db:generate  # Regenerate Prisma client
 pnpm --filter @sparkdesk/api db:studio    # Open Prisma Studio
 pnpm --filter @sparkdesk/api db:seed      # Seed demo data
+pnpm --filter @sparkdesk/api db:reseed    # Clear tickets/customers for the demo org and reseed
+pnpm --filter @sparkdesk/api db:reset     # Full reset — drops schema, re-pushes, and reseeds
 ```
+
+The seeded organization and demo agent always get stable IDs (`demo-org` / `demo-agent`), so `.env` values never need to change across reseeds. Set `DEMO_USER_WORKOS_ID` before reseeding to have the app recognize you as yourself rather than the default demo persona.
+
+For demos, visit `/demo` (not in the nav) to inject realistic sample tickets into the live queue with one click.
 
 ### Tests
 

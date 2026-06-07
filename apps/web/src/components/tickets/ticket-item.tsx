@@ -23,7 +23,7 @@ export function TicketItem({ ticket, selected }: TicketItemProps) {
     <Link
       href={`/tickets/${ticket.id}`}
       onClick={() => trackTicketOpened({ ticketId: ticket.id, ticketStatus: ticket.status, ticketPriority: ticket.priority })}
-      className="relative mb-1 block cursor-pointer rounded-lg border px-3.5 py-3 transition-colors"
+      className="relative mb-0.5 block cursor-pointer rounded-lg border px-3.5 py-2 transition-colors"
       style={{
         borderColor: selected ? 'var(--accent-border)' : 'transparent',
         background: selected ? 'var(--bg-selected)' : 'transparent',
@@ -35,7 +35,7 @@ export function TicketItem({ ticket, selected }: TicketItemProps) {
           style={{ background: 'var(--accent-color)' }}
         />
       )}
-      <div className="mb-2 flex items-start justify-between gap-3">
+      <div className="mb-1 flex items-start justify-between gap-3">
         <span
           className="min-w-0 flex-1 truncate text-[13.5px] font-[680] leading-snug"
           style={{ color: 'var(--text-primary)' }}
